@@ -72,5 +72,3 @@ User roles are embedded inside the JWT token and validated using Spring Security
 5. Access to APIs is granted based on the role present in the token  
 
 Authorization Header format:
-
-# FitTracker
