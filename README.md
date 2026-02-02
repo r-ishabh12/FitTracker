@@ -72,3 +72,28 @@ User roles are embedded inside the JWT token and validated using Spring Security
 5. Access to APIs is granted based on the role present in the token  
 
 Authorization Header format:
+
+Authorization: Bearer <JWT_TOKEN>
+
+---
+
+## Deployment
+
+The application is deployed on Render using a Docker image.
+
+Deployment process:
+
+- Spring Boot application is packaged as a JAR  
+- Docker image is built using a Dockerfile  
+- The Docker image is deployed on Render  
+- Render runs the container and exposes the backend through a public URL  
+
+This approach ensures environment consistency and reliable deployments.
+
+---
+
+## Running the Project Locally Using Docker
+
+```bash
+docker build -t fittracker-backend .
+docker run -p 8080:8080 fittracker-backend
