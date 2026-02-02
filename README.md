@@ -4,8 +4,8 @@ FitTracker is a monolithic backend REST API built using Spring Boot with JWT-bas
 
 ## 🔗 Live Links
 
-- **Live Backend (Render):** [[https://fittracker.onrender.com](https://fitness-mono-z9mw.onrender.com)]([https://fittracker.onrender.com](https://fitness-mono-z9mw.onrender.com))
-- **Swagger API Documentation:** [Swagger UI](https://[fittracker.onrender.com/swagger-ui/index.html](http://fitness-mono-z9mw.onrender.com/swagger-ui/index.html))
+- **Live Backend (Render):** [https://fittracker.onrender.com](https://fitness-mono-z9mw.onrender.com)]
+- **Swagger API Documentation:** [Swagger UI](https://fitness-mono-z9mw.onrender.com/swagger-ui/index.html)
 
 ---
 
