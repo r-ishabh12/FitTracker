@@ -1,0 +1,4 @@
+1:16:01 am [vite] http proxy error: /api/auth/csrf
+AggregateError [ECONNREFUSED]: 
+    at internalConnectMultiple (node:net:1134:18)
+    at afterConnectMultiple (node:net:1715:7)

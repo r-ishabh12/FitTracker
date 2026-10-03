@@ -4,6 +4,8 @@ import com.project.fitness.model.ActivityType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -13,10 +15,14 @@ import java.util.Map;
 @AllArgsConstructor
 public class ActivityRequest {
 
-    private String userId;
+    @NotNull
     private ActivityType type;
     private Map<String, Object> additionalMetrics;
+    @NotNull
+    @Min(1)
     private Integer duration;
+    @Min(0)
     private Integer caloriesBurned;
+    @NotNull
     private LocalDateTime startTime;
 }

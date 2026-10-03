@@ -6,12 +6,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-
-//import java.security.Key;
+import org.springframework.beans.factory.annotation.Value;
 import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
@@ -20,20 +16,24 @@ import java.util.List;
 @Component
 public class JwtUtils {
 
-    private String jwtSecret ="YS1zdHJpbmctc2VjcmV0LWF0LWxlYXN0LTI1Ni1iaXRzLWxvbmc=";
-    private int jwtExpirationsMs = 172800000;
+    @Value("${app.jwt.secret}")
+    private String jwtSecret;
+    @Value("${app.jwt.expiration-ms}")
+    private long jwtExpirationsMs;
 
     public String getJwtFromHeader(HttpServletRequest request){
-        String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer "))
-            return bearerToken.substring(7);
+        if (request.getCookies() != null) {
+            for (var cookie : request.getCookies()) {
+                if ("FITTRACKER_AUTH".equals(cookie.getName())) return cookie.getValue();
+            }
+        }
         return null;
     }
     public String generateToken(String userId, String role){
 
         return Jwts.builder()
                 .subject(userId)
-                .claim("roles", List.of(role))
+                .claim("roles", List.of("ROLE_" + role))
                 .issuedAt(new Date())
                 .expiration(new Date(new Date().getTime() + jwtExpirationsMs))
                 .signWith(key())
@@ -42,10 +42,10 @@ public class JwtUtils {
     public boolean validateJwtToken(String jwtToken){
         try{
             Jwts.parser().verifyWith((SecretKey) key()).build().parseSignedClaims(jwtToken);
+            return true;
         }catch(Exception e){
-            e.printStackTrace();
+            return false;
         }
-        return true;
     }
     private Key key(){
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));

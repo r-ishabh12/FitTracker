@@ -31,6 +31,7 @@ public class User {
     private String lastName;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 32, nullable = false)
     private UserRole role = UserRole.USER;
 
     @CreationTimestamp

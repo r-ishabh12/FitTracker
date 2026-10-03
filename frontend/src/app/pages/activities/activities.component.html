@@ -1,0 +1,16 @@
+<fit-app-shell pageTitle="Activity log">
+  <section class="history-panel">
+    <div class="history-heading"><div><p class="panel-kicker">EVERY SESSION HAS A PLACE</p><h2>Your movement, over time</h2></div><span>{{ items().length }} <small>sessions</small></span></div>
+    @if (notice()) { <p class="history-notice" role="status">{{ notice() }}</p> }
+    @if (loading()) { <div class="page-status">Finding your sessions…</div> }
+    @else if (error()) { <div class="error-banner">{{ error() }} <button class="inline-retry" type="button" (click)="load()">Try again</button></div> }
+    @else if (!items().length) { <div class="history-empty"><span aria-hidden="true">+</span><h3>Your story starts with a first step.</h3><p>Log movement from your overview and it will find its way here.</p></div> }
+    @else {
+      <div class="history-list">
+        @for (activity of items(); track activity.id) {
+          <article class="history-row"><div class="history-date"><strong>{{ activity.startTime | date:'dd' }}</strong><span>{{ activity.startTime | date:'MMM yyyy' }}</span></div><div class="history-activity"><span class="history-symbol" aria-hidden="true">{{ activity.type === 'RUNNING' ? 'R' : activity.type === 'YOGA' ? 'Y' : 'M' }}</span><div><h3>{{ name(activity.type) }}</h3><span>{{ activity.startTime | date:'EEEE · h:mm a' }}</span></div></div><div class="history-metric"><strong>{{ activity.duration }}</strong><span>MINUTES</span></div><div class="history-metric history-calories"><strong>{{ activity.caloriesBurned ?? '—' }}</strong><span>CALORIES</span></div><button class="history-action" type="button" (click)="generate(activity)" [disabled]="busyId() === activity.id"><span>{{ busyId() === activity.id ? 'Thinking…' : 'Get guidance' }}</span><i>↗</i></button></article>
+        }
+      </div>
+    }
+  </section>
+</fit-app-shell>

@@ -39,15 +39,15 @@ public class Recommendation {
     private String recommendation;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "json")
+    @Column(columnDefinition = "jsonb")
     private List<String> improvements;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "json")
+    @Column(columnDefinition = "jsonb")
     private List<String> suggestions;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "json")
+    @Column(columnDefinition = "jsonb")
     private List<String> safety;
 
     @CreationTimestamp

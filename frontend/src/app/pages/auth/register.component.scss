@@ -1,0 +1,4 @@
+@use '../../shared/auth-shell';
+.auth-name-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }.auth-field small { font-size: 10px; color: #81867a; font-weight: 400; }
+.auth-field .field-error { color: #a14d39; }
+@media (max-width: 430px) { .auth-name-row { grid-template-columns: 1fr; } }

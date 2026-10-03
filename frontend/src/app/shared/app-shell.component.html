@@ -1,0 +1,16 @@
+<div class="app-frame">
+  <aside class="app-sidebar">
+    <a class="app-brand" routerLink="/app"><span class="app-brand-mark">F</span><span>fittracker</span></a>
+    <p class="sidebar-label">YOUR SPACE</p>
+    <nav class="app-nav" aria-label="Your space">
+      <a routerLink="/app" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }"><span class="nav-symbol nav-home" aria-hidden="true"></span>Overview</a>
+      <a routerLink="/app/activities" routerLinkActive="is-active"><span class="nav-symbol nav-activity" aria-hidden="true"></span>Activity log</a>
+      <a routerLink="/app/recommendations" routerLinkActive="is-active"><span class="nav-symbol nav-spark" aria-hidden="true">+</span>For you</a>
+    </nav>
+    <div class="sidebar-bottom"><div class="sidebar-note"><span class="note-orbit" aria-hidden="true">+</span><p>Keep showing up<br>in your own way.</p></div><button class="logout-button" type="button" (click)="logout()"><span class="logout-symbol" aria-hidden="true">↗</span>Sign out</button><a class="sidebar-home" routerLink="/">← Back to FitTracker</a></div>
+  </aside>
+  <div class="app-workspace">
+    <header class="app-topbar"><div><span class="mobile-brand">fittracker</span><p class="top-date">{{ today }}</p></div><div class="top-user"><span class="top-user-name">{{ auth.user()?.firstName }} {{ auth.user()?.lastName }}</span><span class="avatar">{{ auth.user()?.firstName?.charAt(0) }}{{ auth.user()?.lastName?.charAt(0) }}</span></div></header>
+    <main class="app-content"><div class="content-heading"><div><p class="content-kicker">YOUR MOVEMENT, YOUR WAY</p><h1>{{ pageTitle }}</h1></div><span class="heading-mark" aria-hidden="true">+</span></div><ng-content /></main>
+  </div>
+</div>

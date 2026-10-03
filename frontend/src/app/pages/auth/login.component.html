@@ -1,0 +1,12 @@
+<main class="auth-page">
+  <aside class="auth-art"><a class="auth-brand" routerLink="/"><span class="auth-brand-mark">F</span> fittracker</a><div class="auth-art-copy"><p>Make space for the long game</p><h1>Come back<br>to <em>your rhythm.</em></h1></div></aside>
+  <section class="auth-main"><div class="auth-card"><a class="auth-back" routerLink="/">← Back to home</a><p class="auth-eyebrow">YOUR PRACTICE IS WAITING</p><h2>Welcome back.</h2><p class="auth-lede">Pick up right where you left off.</p>
+    <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <label class="auth-field">Email address<input type="email" formControlName="email" autocomplete="email" placeholder="you@example.com">@if (form.controls.email.touched && form.controls.email.invalid) { <small class="field-error">Enter a valid email address.</small> }</label>
+      <label class="auth-field">Password<input type="password" formControlName="password" autocomplete="current-password" placeholder="Your password">@if (form.controls.password.touched && form.controls.password.invalid) { <small class="field-error">Enter your password.</small> }</label>
+      @if (error()) { <p class="auth-error" role="alert">{{ error() }}</p> }
+      <button class="auth-submit" type="submit" [disabled]="busy()"><span>{{ busy() ? 'Signing you in…' : 'Log in to FitTracker' }}</span><span aria-hidden="true">↗</span></button>
+    </form>
+    <p class="auth-switch">New to FitTracker? <a routerLink="/register">Create an account</a></p>
+  </div></section>
+</main>

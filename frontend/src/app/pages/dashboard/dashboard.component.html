@@ -1,0 +1,46 @@
+<fit-app-shell pageTitle="Your overview">
+  @if (loading()) { <div class="page-status">Gathering your week…</div> }
+  @else if (error()) { <div class="error-banner" role="alert">{{ error() }} <button type="button" class="inline-retry" (click)="load()">Try again</button></div> }
+  @else {
+    <section class="dashboard-greeting"><div><p class="greeting-kicker">A GOOD DAY TO BEGIN AGAIN</p><h2>Good to see you, <em>{{ auth.user()?.firstName }}.</em></h2><p>Your movement is adding up. Here's a little look at how.</p></div><span class="greeting-sun" aria-hidden="true">+</span></section>
+    <section class="stats-row" aria-label="Your activity totals">
+      <article class="stat-card stat-card--primary"><p>Sessions logged</p><strong>{{ summary()?.totalActivities ?? 0 }}</strong><span>all-time</span><i class="stat-line"></i></article>
+      <article class="stat-card"><p>Time in motion</p><strong>{{ summary()?.totalDurationMinutes ?? 0 }}<small> min</small></strong><span>all-time</span><i class="stat-circle" aria-hidden="true"></i></article>
+      <article class="stat-card"><p>Energy spent</p><strong>{{ summary()?.totalCalories ?? 0 }}<small> kcal</small></strong><span>all-time</span><i class="stat-spark" aria-hidden="true">+</i></article>
+    </section>
+
+    <div class="dashboard-columns">
+      <section class="panel week-panel">
+        <div class="panel-heading"><div><p class="panel-kicker">THE LAST SEVEN DAYS</p><h3>Your week in motion</h3></div><span class="panel-caption">MINUTES</span></div>
+        <div class="week-chart" role="img" aria-label="Minutes of activity for the last seven days">
+          @for (day of summary()?.weeklyActivity ?? []; track day.day; let index = $index) {
+            <div class="chart-column"><span class="chart-value">{{ day.minutes > 0 ? day.minutes : '' }}</span><div class="chart-track"><i [class.chart-bar-today]="index === 6" [style.height.%]="barHeight(day.minutes)"></i></div><span class="chart-label">{{ day.day }}</span></div>
+          }
+        </div>
+        <div class="chart-footnote"><span><i></i> Minutes of movement</span><span>Last 7 days</span></div>
+      </section>
+      <section class="panel session-panel">
+        <div class="panel-heading"><div><p class="panel-kicker">CAPTURE THE MOMENT</p><h3>Log a session</h3></div><span class="panel-icon" aria-hidden="true">＋</span></div>
+        <form class="session-form" [formGroup]="form" (ngSubmit)="logActivity()">
+          <label>What did you do?<select formControlName="type">@for (type of types; track type.value) { <option [value]="type.value">{{ type.label }}</option> }</select></label>
+          <div class="form-two"><label>Minutes<input type="number" formControlName="duration" min="1" max="1440"></label><label>Calories <span>(optional)</span><input type="number" formControlName="calories" min="0" placeholder="—"></label></div>
+          <label>When?<input type="datetime-local" formControlName="startTime"></label>
+          @if (formMessage()) { <p class="form-note" role="status">{{ formMessage() }}</p> }
+          <button class="session-submit" type="submit" [disabled]="saving()"><span>{{ saving() ? 'Saving…' : 'Add to my week' }}</span><span>↗</span></button>
+        </form>
+      </section>
+    </div>
+
+    <div class="dashboard-columns dashboard-columns--lower">
+      <section class="panel recent-panel"><div class="panel-heading"><div><p class="panel-kicker">A RECORD OF SHOWING UP</p><h3>Recent movement</h3></div><a class="panel-link" routerLink="/app/activities">See your activity <span>↗</span></a></div>
+        @if ((summary()?.recentActivities?.length ?? 0) === 0) { <div class="empty-state"><span class="empty-orbit">+</span><p>Your first session has a place here.</p><span>Log a walk, a stretch, or anything that feels good.</span></div> }
+        @else { <div class="activity-list">@for (activity of summary()?.recentActivities ?? []; track activity.id) { <article class="activity-row"><span class="activity-glyph" aria-hidden="true">{{ activity.type === 'RUNNING' ? 'R' : activity.type === 'YOGA' ? 'Y' : 'M' }}</span><div class="activity-meta"><strong>{{ activityName(activity.type) }}</strong><span>{{ activity.startTime | date:'EEE, MMM d · h:mm a' }}</span></div><span class="activity-duration">{{ activity.duration }} <small>min</small></span><span class="activity-calories">{{ activity.caloriesBurned ?? '—' }} <small>kcal</small></span></article> }</div> }
+      </section>
+      <section class="panel advice-panel"><div class="panel-heading"><div><p class="panel-kicker">A THOUGHT FOR YOUR NEXT SESSION</p><h3>In your corner</h3></div><span class="advice-spark" aria-hidden="true">+</span></div>
+        @if (recommendations().length) { <article class="advice-card"><span class="advice-type">{{ recommendations()[0].type || 'A little guidance' }}</span><p>{{ recommendations()[0].recommendation }}</p>@if (recommendations()[0].safety.length) { <small>{{ recommendations()[0].safety[0] }}</small> }</article><a class="panel-link" routerLink="/app/recommendations">All your guidance <span>↗</span></a> }
+        @else if (summary()?.recentActivities?.length) { <div class="empty-advice"><p>Want a fresh perspective on your latest session?</p><button type="button" (click)="trackRecommendation(summary()!.recentActivities[0].id)">Get a little guidance <span>↗</span></button></div> }
+        @else { <div class="empty-advice"><p>Log a session and we'll offer a few thoughtful ideas for what comes next.</p><span>Always gentle. Always yours.</span></div> }
+      </section>
+    </div>
+  }
+</fit-app-shell>

@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ActivityRepository extends JpaRepository<Activity, String> {
     List<Activity> findByUserId(String userId);
+    List<Activity> findByUserIdOrderByStartTimeDesc(String userId);
 }

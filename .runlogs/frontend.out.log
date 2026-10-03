@@ -1,0 +1,25 @@
+> Building...
+√ Building...
+Initial chunk files | Names                     |  Raw size
+main.js             | main                      |   3.84 kB | 
+chunk-F3IOFKBG.js   | -                         |   3.57 kB | 
+styles.css          | styles                    |   1.03 kB | 
+polyfills.js        | polyfills                 | 144 bytes | 
+
+                    | Initial total             |   8.59 kB
+
+Lazy chunk files    | Names                     |  Raw size
+chunk-6ZQ4XOOD.js   | landing-component         |  77.56 kB | 
+chunk-MLLWZR5Y.js   | dashboard-component       |  54.22 kB | 
+chunk-CU234MGX.js   | register-component        |  23.85 kB | 
+chunk-BV3KY2VE.js   | -                         |  22.59 kB | 
+chunk-G7NCCHDQ.js   | recommendations-component |  22.35 kB | 
+chunk-3IYDSCDU.js   | activities-component      |  22.01 kB | 
+chunk-AJY2F4XZ.js   | login-component           |  20.23 kB | 
+
+Application bundle generation complete. [4.120 seconds] - 2026-10-03T19:36:23.282Z
+
+Watch mode enabled. Watching for file changes...
+NOTE: Raw file sizes do not reflect development server per-request transformations.
+  ➜  Local:   http://127.0.0.1:4200/
+1:06:25 am [vite] (client) [optimizer] bundling dependencies...

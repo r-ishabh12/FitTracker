@@ -1,12 +1,11 @@
 package com.project.fitness.service;
 
-import com.project.fitness.dto.RecommendationRequest;
+import com.project.fitness.dto.RecommendationResponse;
 import com.project.fitness.model.Activity;
 import com.project.fitness.model.Recommendation;
-import com.project.fitness.model.User;
-import com.project.fitness.repository.ActivityRepository;
 import com.project.fitness.repository.RecommendationRepository;
-import com.project.fitness.repository.UserRepository;
+import com.project.fitness.service.recommendation.RecommendationAdvice;
+import com.project.fitness.service.recommendation.RecommendationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,32 +14,34 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class RecommendationService {
-    private final UserRepository userRepository;
-    private final ActivityRepository activityRepository;
+    private final ActivityService activityService;
     private final RecommendationRepository recommendationRepository;
-    public Recommendation generateRecommendation(RecommendationRequest request) {
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(()-> new RuntimeException("User not found" + request.getUserId()));
-        Activity activity = activityRepository.findById(request.getActivityId())
-                .orElseThrow(() -> new RuntimeException("activity not found" + request.getActivityId()));
+    private final RecommendationProvider recommendationProvider;
 
+    public RecommendationResponse generate(String userId, String activityId) {
+        Activity activity = activityService.getOwnedActivity(userId, activityId);
+        RecommendationAdvice advice = recommendationProvider.generate(activity);
         Recommendation recommendation = Recommendation.builder()
-                .user(user)
+                .user(activity.getUser())
                 .activity(activity)
-                .improvements(request.getImprovements())
-                .suggestions(request.getSuggestions())
-                .safety(request.getSafety())
+                .type(advice.type())
+                .recommendation(advice.recommendation())
+                .improvements(advice.improvements())
+                .suggestions(advice.suggestions())
+                .safety(advice.safety())
                 .build();
-
-        Recommendation savedRecommendation = recommendationRepository.save(recommendation);
-        return savedRecommendation;
+        return toResponse(recommendationRepository.save(recommendation));
     }
 
-    public List<Recommendation> getUserRecommendation(String userId) {
-        return recommendationRepository.getByUserId(userId);
+    public List<RecommendationResponse> forUser(String userId) {
+        return recommendationRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
+                .map(this::toResponse).toList();
     }
 
-    public List<Recommendation> getActivityRecommendation(String activityId) {
-        return recommendationRepository.getByActivityId(activityId);
+    private RecommendationResponse toResponse(Recommendation recommendation) {
+        return new RecommendationResponse(
+                recommendation.getId(), recommendation.getActivity().getId(), recommendation.getActivity().getType(),
+                recommendation.getType(), recommendation.getRecommendation(), recommendation.getImprovements(),
+                recommendation.getSuggestions(), recommendation.getSafety(), recommendation.getCreatedAt());
     }
 }

@@ -1,0 +1,84 @@
+<main class="landing-shell">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-image" role="img" aria-label="Athlete running at sunrise"></div>
+    <header class="site-nav">
+      <a class="wordmark" routerLink="/" aria-label="FitTracker home"><span class="brand-mark">F</span> fittracker</a>
+      <nav aria-label="Main navigation">
+        <a href="#approach">The approach</a>
+        <a href="#stories">Your rhythm</a>
+        <a class="nav-login" routerLink="/login">Log in <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="eyebrow-dot"></span> A little more in tune with you</p>
+      <h1 id="hero-title">Make room for <span class="hero-image-word" aria-label="movement"></span> movement.</h1>
+      <p class="hero-description">A calmer way to track your training, notice your progress, and build a routine that feels like yours.</p>
+      <div class="hero-actions">
+        <a routerLink="/register" class="button button-light">Start your practice <span aria-hidden="true">↗</span></a>
+        <a href="#approach" class="button button-outline">Take a closer look <span aria-hidden="true">↓</span></a>
+      </div>
+    </div>
+    <div class="hero-caption"><span>01 — 07</span><span>Show up as you are</span><span class="caption-line"></span></div>
+    <div class="hero-scroll" aria-hidden="true">SCROLL TO EXPLORE <span>↓</span></div>
+  </section>
+
+  <section class="intro-section" id="approach">
+    <div class="section-kicker"><span>FITNESS, WITHOUT THE NOISE</span><span>FOR THE LONG GAME</span></div>
+    <div class="intro-layout">
+      <h2>Progress isn't a finish line.<br><em>It's a feeling.</em></h2>
+      <p class="intro-copy">FitTracker gives your movement a place to land. Capture the work, find the threads, and keep building a practice that fits into the rest of your life.</p>
+    </div>
+    <div class="feature-grid" aria-label="FitTracker features">
+      <article class="feature-card feature-card--hero">
+        <div class="feature-image feature-image--run"></div>
+        <div class="feature-overlay"></div>
+        <div class="feature-content"><span class="feature-number">A</span><h3>Every kind of<br>movement counts.</h3><p>Runs, rides, strength, recovery. It all belongs here.</p></div>
+        <span class="feature-arrow" aria-hidden="true">↗</span>
+      </article>
+      <article class="feature-card feature-card--small feature-card--lime"><span class="small-glyph" aria-hidden="true">↗</span><p class="feature-mini-label">YOUR WEEK, AT A GLANCE</p><h3>Notice<br>your rhythm.</h3><span class="mini-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></article>
+      <article class="feature-card feature-card--small feature-card--cream"><span class="orbit-mark" aria-hidden="true">+</span><p class="feature-mini-label">MADE AROUND YOU</p><h3>Less pressure.<br>More purpose.</h3><span class="feature-foot">YOUR PRACTICE, YOUR PACE</span></article>
+      <article class="feature-card feature-card--small feature-card--photo"><div class="feature-image feature-image--stretch"></div><div class="feature-overlay"></div><div class="photo-card-copy"><p class="feature-mini-label">A LITTLE GUIDANCE</p><h3>Ideas for<br>what's next.</h3></div></article>
+      <article class="feature-card feature-card--small feature-card--dark"><p class="feature-mini-label">CONSISTENCY OVER INTENSITY</p><h3>Come back<br>to what works.</h3><span class="dark-ring" aria-hidden="true"></span><span class="feature-foot">BUILT FOR REAL LIFE</span></article>
+    </div>
+  </section>
+
+  <section class="story-section" id="stories">
+    <div class="story-pin">
+      <p class="eyebrow eyebrow-dark"><span class="eyebrow-dot"></span> A practice, not a performance</p>
+      <h2>Find a way<br>to <em>keep going.</em></h2>
+      <p class="story-lede">The best plan is the one that can meet you where you are. Start small. Stay curious. Let the shape of your week tell its own story.</p>
+      <a routerLink="/register" class="text-link">Find your starting point <span>↗</span></a>
+    </div>
+    <div class="story-cards">
+      @for (story of stories; track story.title; let index = $index) {
+        <article class="story-card" [class.story-card--active]="openStory() === index" [style.background-image]="'linear-gradient(180deg, transparent 25%, rgba(17,19,15,.76) 100%), url(' + story.image + ')'">
+          <button class="story-card-button" type="button" (click)="openStory.set(index)" [attr.aria-expanded]="openStory() === index">
+            <span class="story-index">0{{ index + 1 }}</span><span class="story-title">{{ story.title }}</span><span class="story-plus">{{ openStory() === index ? '−' : '+' }}</span>
+          </button>
+          @if (openStory() === index) { <p class="story-card-copy">{{ story.copy }}</p> }
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="manifesto">
+    <p class="manifesto-label">A NOTE TO YOUR FUTURE SELF</p>
+    <p class="manifesto-text"><span class="reveal-word">You</span> <span class="reveal-word">don't</span> <span class="reveal-word">need</span> <span class="reveal-word">a</span> <span class="reveal-word">new</span> <span class="reveal-word">you.</span> <span class="reveal-word">Just</span> <span class="reveal-word">a</span> <span class="reveal-word">little</span> <span class="reveal-word">space</span> <span class="reveal-word">to</span> <span class="reveal-word">be</span> <span class="reveal-word">the</span> <span class="reveal-word">you</span> <span class="reveal-word">who</span> <span class="reveal-word">shows</span> <span class="reveal-word">up.</span></p>
+    <span class="manifesto-spark" aria-hidden="true">+</span>
+  </section>
+
+  <section class="voices-section">
+    <div class="voices-heading"><div><p class="eyebrow eyebrow-dark"><span class="eyebrow-dot"></span> Notes from the journey</p><h2>It's the little<br><em>things that add up.</em></h2></div><div class="carousel-controls"><button type="button" (click)="changeQuote(-1)" aria-label="Previous story">←</button><button type="button" (click)="changeQuote(1)" aria-label="Next story">→</button></div></div>
+    <div class="quote-panel">
+      <div class="quote-mark" aria-hidden="true">“</div>
+      <div class="quote-body"><blockquote>{{ quotes[activeQuote()].quote }}</blockquote><div class="quote-person"><img [src]="quotes[activeQuote()].image" [alt]="quotes[activeQuote()].name"><div><strong>{{ quotes[activeQuote()].name }}</strong><span>{{ quotes[activeQuote()].detail }}</span></div></div></div>
+      <div class="quote-count">0{{ activeQuote() + 1 }} <span>/</span> 0{{ quotes.length }}</div>
+    </div>
+  </section>
+
+  <footer class="landing-footer">
+    <div class="footer-topline"><span>YOUR NEXT CHAPTER STARTS SMALL</span><span>FITTRACKER © 2026</span></div>
+    <div class="footer-cta"><h2>Make a little<br><em>room for you.</em></h2><a routerLink="/register" class="button button-dark">Begin your practice <span>↗</span></a></div>
+    <div class="footer-bottom"><a class="wordmark" routerLink="/"><span class="brand-mark">F</span> fittracker</a><span>Move well. Feel like you.</span><a routerLink="/login">Already have an account? <span>Log in ↗</span></a></div>
+  </footer>
+</main>

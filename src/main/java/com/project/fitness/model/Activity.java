@@ -33,10 +33,11 @@ public class Activity {
     private User user;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 64, nullable = false)
     private ActivityType type;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "json")
+    @Column(columnDefinition = "jsonb")
     private Map<String, Object> additionalMetrics;
     private Integer duration;
     private Integer caloriesBurned;

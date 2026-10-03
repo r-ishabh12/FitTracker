@@ -1,0 +1,9 @@
+<fit-app-shell pageTitle="A little guidance">
+  <section class="recommendation-intro"><span class="recommendation-flower" aria-hidden="true">+</span><div><p class="panel-kicker">THOUGHTFUL IDEAS, GROUNDED IN YOUR ACTIVITY</p><h2>A gentle nudge for <em>what's next.</em></h2><p>Personalized notes based on your sessions, offered as ideas to explore at your own pace.</p></div></section>
+  @if (loading()) { <div class="page-status">Gathering your notes…</div> }
+  @else if (error()) { <div class="error-banner" role="alert">{{ error() }} <button class="inline-retry" type="button" (click)="load()">Try again</button></div> }
+  @else if (!recommendations().length) { <div class="recommendation-empty"><span>+</span><h3>Good guidance starts with a little context.</h3><p>Log a session, then ask for a few ideas tailored to that activity.</p></div> }
+  @else { <section class="recommendation-list">@for (item of recommendations(); track item.id) {
+    <article class="recommendation-card"><header><div><span class="recommendation-type">{{ item.type || 'A thought for you' }}</span><h3>{{ label(item.activityType) }}<span> · </span>{{ item.createdAt | date:'MMM d, y' }}</h3></div><span class="recommendation-orbit" aria-hidden="true">↗</span></header><p class="recommendation-main">{{ item.recommendation }}</p><div class="recommendation-columns"><section><h4>Consider</h4><ul>@for (point of item.improvements; track point) { <li>{{ point }}</li> } @empty { <li>Keep noticing how each session feels.</li> }</ul></section><section><h4>Try next</h4><ul>@for (point of item.suggestions; track point) { <li>{{ point }}</li> } @empty { <li>Make the next step feel manageable.</li> }</ul></section></div>@if (item.safety.length) { <aside class="safety-note"><span>Keep in mind</span><ul>@for (point of item.safety; track point) { <li>{{ point }}</li> }</ul></aside> }</article>
+  }</section> }
+</fit-app-shell>

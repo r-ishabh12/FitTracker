@@ -1,0 +1,13 @@
+<main class="auth-page">
+  <aside class="auth-art"><a class="auth-brand" routerLink="/"><span class="auth-brand-mark">F</span> fittracker</a><div class="auth-art-copy"><p>Small steps have a way of adding up</p><h1>Start where<br><em>you are.</em></h1></div></aside>
+  <section class="auth-main"><div class="auth-card"><a class="auth-back" routerLink="/">← Back to home</a><p class="auth-eyebrow">A PRACTICE THAT FITS YOU</p><h2>Make it yours.</h2><p class="auth-lede">Create your account. Your next chapter can start small.</p>
+    <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="auth-name-row"><label class="auth-field">First name<input type="text" formControlName="firstName" autocomplete="given-name" placeholder="First name">@if (form.controls.firstName.touched && form.controls.firstName.invalid) { <small class="field-error">Add your first name.</small> }</label><label class="auth-field">Last name<input type="text" formControlName="lastName" autocomplete="family-name" placeholder="Last name">@if (form.controls.lastName.touched && form.controls.lastName.invalid) { <small class="field-error">Add your last name.</small> }</label></div>
+      <label class="auth-field">Email address<input type="email" formControlName="email" autocomplete="email" placeholder="you@example.com">@if (form.controls.email.touched && form.controls.email.invalid) { <small class="field-error">Enter a valid email address.</small> }</label>
+      <label class="auth-field">Password<input type="password" formControlName="password" autocomplete="new-password" placeholder="At least 10 characters"><small>Use at least 10 characters.</small>@if (form.controls.password.touched && form.controls.password.invalid) { <small class="field-error">Use at least 10 characters.</small> }</label>
+      @if (error()) { <p class="auth-error" role="alert">{{ error() }}</p> }
+      <button class="auth-submit" type="submit" [disabled]="busy()"><span>{{ busy() ? 'Creating your account…' : 'Create your account' }}</span><span aria-hidden="true">↗</span></button>
+    </form>
+    <p class="auth-switch">Already tracking with us? <a routerLink="/login">Log in</a></p>
+  </div></section>
+</main>

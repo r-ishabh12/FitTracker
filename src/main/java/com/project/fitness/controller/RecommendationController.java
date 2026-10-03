@@ -1,37 +1,28 @@
 package com.project.fitness.controller;
 
-import com.project.fitness.dto.RecommendationRequest;
-import com.project.fitness.model.Recommendation;
+import com.project.fitness.dto.RecommendationResponse;
 import com.project.fitness.service.RecommendationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/recommendation")
+@RequestMapping("/api/recommendations")
 @RequiredArgsConstructor
 public class RecommendationController {
-
     private final RecommendationService recommendationService;
 
-    @PostMapping("/generate")
-    public ResponseEntity<Recommendation> generateRecommendation(@RequestBody RecommendationRequest request){
-        Recommendation recommendation = recommendationService.generateRecommendation(request);
-        return ResponseEntity.ok(recommendation);
+    @PostMapping("/{activityId}/generate")
+    public ResponseEntity<RecommendationResponse> generate(@PathVariable String activityId,
+                                                            Authentication authentication) {
+        return ResponseEntity.status(201).body(recommendationService.generate(authentication.getName(), activityId));
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Recommendation>> getUserRecommendation(@PathVariable String userId){
-        List<Recommendation> recommendations = recommendationService.getUserRecommendation(userId);
-        return ResponseEntity.ok(recommendations);
+    @GetMapping
+    public List<RecommendationResponse> forCurrentUser(Authentication authentication) {
+        return recommendationService.forUser(authentication.getName());
     }
-
-    @GetMapping("/activity/{activityId}")
-    public ResponseEntity<List<Recommendation>> getActivityRecommendation(@PathVariable String activityId){
-        List<Recommendation> recommendations = recommendationService.getActivityRecommendation(activityId);
-        return ResponseEntity.ok(recommendations);
-    }
-
 }
