@@ -1,6 +1,6 @@
 # FitTracker
 
-FitTracker is a Spring Boot fitness tracking API with an Angular 22 web app and PostgreSQL storage.
+FitTracker is organized as two applications: a Spring Boot API in `backend/` and an Angular 22 web app in `frontend/`, with PostgreSQL storage.
 
 ## Requirements
 
@@ -18,13 +18,14 @@ Copy-Item .env.example .env
 docker compose up -d postgres
 ```
 
-For a local Spring Boot process, configure `DB_URL=jdbc:postgresql://localhost:5432/fittracker`, `DB_USER`, and `DB_PWD` in the process environment. Flyway creates the schema from `src/main/resources/db/migration`; Hibernate validates the migrated schema at startup.
+For a local Spring Boot process, configure `DB_URL=jdbc:postgresql://localhost:5432/fittracker`, `DB_USER`, and `DB_PWD` in the process environment. Flyway creates the schema from `backend/src/main/resources/db/migration`; Hibernate validates the migrated schema at startup.
 
 The Compose service uses `fittracker` as the development database/user unless overridden. The checked-in `.env.example` is only for local development. Set a private random `APP_JWT_SECRET`, `APP_AUTH_COOKIE_SECURE=true`, and your OpenAI API key in production. Never commit `.env` or production credentials.
 
 ## Start the API
 
 ```powershell
+cd backend
 .\mvnw.cmd spring-boot:run
 ```
 
