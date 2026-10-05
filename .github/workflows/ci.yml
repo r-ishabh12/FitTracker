@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: fittracker
+          POSTGRES_USER: fittracker
+          POSTGRES_PASSWORD: fittracker
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U fittracker -d fittracker"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DB_URL: jdbc:postgresql://localhost:5432/fittracker
+      DB_USER: fittracker
+      DB_PWD: fittracker
+      APP_JWT_SECRET: Y2ktb25seS10ZXN0LXNlY3JldC1mb3ItZml0dHJhY2tlci1jaQ==
+      APP_AUTH_COOKIE_SECURE: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - name: Run backend tests
+        run: mvn -B -f backend/pom.xml verify
+
+  frontend:
+    name: Frontend build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Build Angular app
+        working-directory: frontend
+        run: npm run build
