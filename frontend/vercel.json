@@ -6,7 +6,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://fittracker-api.onrender.com/api/:path*"
+      "destination": "https://fittracker-wmrp.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",
