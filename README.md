@@ -1,91 +1,74 @@
 # FitTracker
 
-FitTracker is organized as two applications: a Spring Boot API in `backend/` and an Angular 22 web app in `frontend/`, with PostgreSQL storage.
+FitTracker is a workout logging web app with a Spring Boot API and an Angular frontend.
 
-## Requirements
+**Live site:** [Open FitTracker](https://fit-tracker-phi-weld.vercel.app)
 
-- Java 21
-- Node.js 22.22.3 or newer on the Node 22 line (or another version supported by Angular 22)
-- npm 10 or newer
-- Docker Compose
+**Dashboard:** [Open dashboard](https://fit-tracker-phi-weld.vercel.app/app) (sign-in required)
 
-## Start PostgreSQL
+## Current features
 
-Copy `.env.example` to `.env` (change the local credentials if you like), then start the database. Spring Boot imports this local properties file when launched from the repository root.
+- Register, sign in, and manage a personal account.
+- Manually log an activity type, duration, start time, and optional calories.
+- View recent activities and weekly duration, activity, and calorie summaries.
+- Request activity-based recommendations when the backend has an OpenAI API key.
+
+Activity logging is manual in the current version. The site does not currently read GPS, phone sensors, Gmail, an Amazfit watch, or other health platforms.
+
+## How activity data is saved
+
+1. A signed-in user submits the activity form on the Angular dashboard.
+2. Angular sends the activity to `POST /api/activities` with its type, duration, start time, optional calories, and any additional metrics.
+3. Vercel forwards `/api/*` requests to the Spring Boot API on Render. The API authenticates the request using the secure JWT cookie, associates the activity with that user, and saves it to PostgreSQL on Neon.
+4. When the dashboard reloads, the API returns that user’s activities and computes the weekly summary from the saved entries. Activities are ordered by start time, newest first.
+
+The backend runs Flyway migrations at startup and Hibernate validates the database schema. Activity metrics are stored in a PostgreSQL `jsonb` field.
+
+## Technology
+
+- **Frontend:** Angular 22, TypeScript, RxJS, SCSS
+- **Backend:** Java 21, Spring Boot 4, Spring MVC, Spring Security, Spring Data JPA, Hibernate, Flyway
+- **Database:** PostgreSQL; Neon in production and Docker Compose for local development
+- **Hosting:** Vercel for the Angular site; Render for the Spring Boot API
+- **CI:** GitHub Actions builds the frontend and runs backend tests for pull requests and pushes to `main`
+
+## Run locally
+
+Requirements: Java 21, Node.js 22, npm, and Docker Compose.
+
+From the repository root, create the local environment file and start PostgreSQL:
 
 ```powershell
 Copy-Item .env.example .env
 docker compose up -d postgres
 ```
 
-For a local Spring Boot process, configure `DB_URL=jdbc:postgresql://localhost:5432/fittracker`, `DB_USER`, and `DB_PWD` in the process environment. Flyway creates the schema from `backend/src/main/resources/db/migration`; Hibernate validates the migrated schema at startup.
-
-The Compose service uses `fittracker` as the development database/user unless overridden. The checked-in `.env.example` is only for local development. Set a private random `APP_JWT_SECRET`, `APP_AUTH_COOKIE_SECURE=true`, and your OpenAI API key in production. Never commit `.env` or production credentials.
-
-## Start the API
+Start the API in a second terminal:
 
 ```powershell
 cd backend
 .\mvnw.cmd spring-boot:run
 ```
 
-The API is available on `http://localhost:8080`. Swagger UI is at `/swagger-ui.html`.
-
-## Start the Angular app
+Start the Angular app in another terminal:
 
 ```powershell
 cd frontend
-npm install
+npm ci
 npm start
 ```
 
-Open `http://localhost:4200`. Angular proxies `/api` to the Spring Boot server so the authentication cookies and CSRF token remain same-origin from the browser's perspective.
+Open `http://localhost:4200`. The Angular development server proxies `/api` to `http://localhost:8080`. Swagger UI is available at `http://localhost:8080/swagger-ui.html`.
 
-## Authentication and roles
+The local `.env.example` values are for development only. Never commit `.env` or production credentials.
 
-Public registration always creates a `USER`. The first `ADMIN` should be provisioned by an operator after registration, for example with a one-time database update:
+## Deployment
 
-```sql
-UPDATE fitness_user SET role = 'ADMIN' WHERE email = 'admin@example.com';
-```
+The repository includes [`render.yaml`](render.yaml), [`backend/Dockerfile`](backend/Dockerfile), and [`frontend/vercel.json`](frontend/vercel.json) for deployment configuration.
 
-Sign out and sign in again after changing a role so a new role claim is issued. Admin API routes are restricted to `ADMIN`; the first web experience is focused on regular users.
+- **Neon:** Create a PostgreSQL database. Set the Render service variables `DB_URL`, `DB_USER`, and `DB_PWD` using Neon’s connection details. Keep the credentials separate from the JDBC URL; use `jdbc:postgresql://HOST/DATABASE?sslmode=require` for `DB_URL`.
+- **Render:** Deploy the API from the repository root using `backend/Dockerfile`. Set `APP_JWT_SECRET` to a private secret and `APP_AUTH_COOKIE_SECURE=true`. Flyway creates or updates the schema at startup; `/actuator/health` is the health check.
+- **Vercel:** Set the project root directory to `frontend`. The build command is `npm run build` and the output directory is `dist/fittracker-web/browser`. The `/api` rewrite currently targets `https://fittracker-wmrp.onrender.com`.
+- **CI/CD:** The workflow in [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs backend tests with a temporary PostgreSQL database and builds Angular. Connect Render and Vercel to the Git repository’s `main` branch for production deployments. Protect `main` with required CI checks before merging.
 
-## Recommendations
-
-Set `OPENAI_API_KEY` for AI-generated advice. The key stays on the backend. Without it, recommendation generation returns a service-unavailable response; activity tracking and the rest of the dashboard continue to work.
-
-## Production deployment: Neon, Render, and Vercel
-
-The Angular app is hosted as a static site on Vercel. The Spring Boot API runs as a Docker web service on Render. Neon supplies PostgreSQL. Vercel forwards `/api/*` requests to Render, so the browser continues to use same-origin URLs and the existing HTTP-only auth and CSRF cookies work without cross-origin cookie settings.
-
-### 1. Create the Neon database
-
-1. Create a Neon project and database, then open **Connect** in the Neon console.
-2. Copy the pooled connection details (the hostname containing `-pooler` is appropriate for a web service) and keep the database name, username, and password.
-3. Form the JDBC URL as `jdbc:postgresql://HOST/DB_NAME?sslmode=require`, using the Neon hostname and database name exactly. Set this plus the username and password on Render in the next step. Flyway applies the checked-in migrations on first startup.
-
-### 2. Create the Render API service
-
-1. Push this repository to GitHub and choose **New + → Blueprint** in Render. Connect the repository and select `main`; Render reads [`render.yaml`](render.yaml).
-2. When prompted, enter Neon values for `DB_URL`, `DB_USER`, and `DB_PWD`. Keep the generated `APP_JWT_SECRET` and `APP_AUTH_COOKIE_SECURE=true`. Add `OPENAI_API_KEY` in Render's Environment page only if you want AI recommendations.
-3. Deploy the Blueprint. It builds from [`backend/Dockerfile`](backend/Dockerfile), runs database migrations, and checks `/actuator/health`.
-4. Note the service URL, normally `https://fittracker-api.onrender.com`. If Render assigns a different host, update `destination` in [`frontend/vercel.json`](frontend/vercel.json) to `https://YOUR-RENDER-HOST/api/:path*` before deploying the frontend.
-
-Keep Neon and Render in nearby regions to reduce database latency. Do not use the local development credentials or JWT secret in production.
-
-### 3. Create the Vercel frontend project
-
-1. Import the same GitHub repository into Vercel.
-2. Set **Root Directory** to `frontend`. Use Node.js 22. Vercel reads `frontend/vercel.json`; the build command is `npm run build` and output is `dist/fittracker-web/browser`.
-3. Deploy. Confirm the Vercel site can reach `/api/auth/csrf` through the rewrite and then test registration, login, and logout. The Render origin is proxied behind the Vercel domain, so no backend CORS allowlist is needed.
-
-### 4. Turn on merge-to-main CI/CD
-
-The workflow in [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs the backend integration tests against a temporary PostgreSQL service and builds the Angular app for pull requests and pushes to `main`.
-
-1. In GitHub, open **Settings → Branches** (or the repository ruleset) and protect `main`: require pull requests and require the `Backend tests` and `Frontend build` checks before merging.
-2. Keep the Render service connected to `main`. Its Blueprint uses `autoDeployTrigger: checksPass`, so Render deploys a main commit after GitHub checks pass.
-3. In Vercel project **Settings → Git**, set `main` as the Production Branch and leave Git deployments enabled. Vercel will build/deploy production on main updates and make preview deployments for branches/PRs.
-
-After these steps, merge a PR into `main`: CI validates both apps, Render deploys the API, and Vercel publishes the Angular frontend. If your Vercel plan or repository integration does not wait on GitHub checks, the branch protection rule still prevents unvalidated changes from reaching `main`.
+Set `OPENAI_API_KEY` in Render only if you want AI-generated recommendations. The key stays on the backend.
